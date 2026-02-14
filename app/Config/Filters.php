@@ -12,6 +12,7 @@ use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
+use CodeIgniter\Shield\Filters\AuthRates;
 
 class Filters extends BaseFilters
 {
@@ -25,6 +26,7 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
+        'auth-rates'    => AuthRates::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
@@ -72,11 +74,12 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // ...
+            'csrf',
             'session' => [
                 'except' => [
                     '/',          // your holding page route
-                    'login*',
+                    'login',
+                    'login/*',
                     'register',
                     'auth/a/*',
                     'logout',
@@ -84,8 +87,8 @@ class Filters extends BaseFilters
             ],
         ],
         'after' => [
-            // 'honeypot',
-            // 'secureheaders',
+            'secureheaders',
+            'toolbar',
         ],
     ];
 
@@ -113,5 +116,14 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'auth-rates' => [
+            'before' => [
+                'login',
+                'login/*',
+                'register',
+                'auth/*',
+            ]
+        ],
+    ];
 }
