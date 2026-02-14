@@ -1,0 +1,28 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(
+        180deg,
+        #efe7d0 0%,
+        #efe7d0 70%,
+        #cdc3a6 100%
+    );
+}
+
+.card {
+    padding: 1rem;
+}
+
+.card > img {
+    max-width: min(70vw, 388px);
+    max-height: min(70vh, 661px);
+    height: auto;
+    display: block;
+}
