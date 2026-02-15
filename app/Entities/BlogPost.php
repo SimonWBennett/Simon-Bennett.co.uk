@@ -11,7 +11,6 @@ class BlogPost extends Entity
         'user_id' => null,
         'title' => null,
         'slug' => null,
-        'excerpt' => null,
         'content' => null,
         'status' => 'draft',
         'cover_image' => null,

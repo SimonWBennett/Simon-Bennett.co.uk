@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Entities\BlogPost as BlogPostEntity;
 use CodeIgniter\Model;
 
+use function convert_accented_characters;
+use function url_title;
+
 class BlogPost extends Model
 {
     protected $table = 'blog_posts';
@@ -38,7 +41,6 @@ class BlogPost extends Model
     protected $validationRules = [
         'user_id' => 'required|integer|is_natural_no_zero',
         'title' => 'required|string|max_length[255]|is_unique[blog_posts.title,id,{id}]',
-        'slug' => 'required|alpha_dash|max_length[255]|is_unique[blog_posts.slug,id,{id}]',
         'content' => 'required|string',
         'status' => 'required|in_list[draft,scheduled,published,archived]',
         'cover_image' => 'permit_empty|string|max_length[255]',
@@ -48,14 +50,27 @@ class BlogPost extends Model
         'published_at' => 'permit_empty|valid_date',
     ];
     protected $validationMessages = [
-        'slug' => [
-            'is_unique' => 'The {field} field must be unique.',
-        ],
         'status' => [
             'in_list' => 'The {field} field must be one of the following: {param}.',
         ],
     ];
     protected $skipValidation = false;
+    protected $beforeInsert = ['syncSlugWithTitle'];
+    protected $beforeUpdate = ['syncSlugWithTitle'];
+
+
+    protected function syncSlugWithTitle(array $event): array
+    {
+        if (! isset($event['data']['title'])) {
+            return $event;
+        }
+
+        $title = trim((string) $event['data']['title']);
+        $event['data']['title'] = $title;
+        $event['data']['slug'] = url_title(convert_accented_characters($title), '-', true);
+
+        return $event;
+    }
 
     public function published(): BlogPost
     {
