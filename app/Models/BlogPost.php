@@ -33,10 +33,10 @@ class BlogPost extends Model
     protected array $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'published_at' => 'datetime',
+        'published_at' => '?datetime',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
+        'updated_at' => '?datetime',
+        'deleted_at' => '?datetime',
     ];
     protected $validationRules = [
         'user_id' => 'required|integer|is_natural_no_zero',
@@ -75,9 +75,6 @@ class BlogPost extends Model
     public function published(): BlogPost
     {
         return $this->where('status', 'published')
-            ->groupStart()
-                ->where('published_at <=', date('Y-m-d H:i:s'))
-                ->orWhere('published_at IS NULL')
-            ->groupEnd();
+            ->where('published_at <=', date('Y-m-d H:i:s'));
     }
 }
