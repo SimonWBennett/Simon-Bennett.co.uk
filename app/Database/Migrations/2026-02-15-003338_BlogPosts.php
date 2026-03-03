@@ -36,22 +36,13 @@ class BlogPosts extends Migration
                 'constraint' => 20,
                 'default' => 'draft',
             ],
-            'cover_image' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
-                'null' => true,
-            ],
-            'meta_title' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
+            'cover_image_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
+                'unsigned' => true,
                 'null' => true,
             ],
             'meta_description' => [
-                'type' => 'VARCHAR',
-                'constraint' => 255,
-                'null' => true,
-            ],
-            'meta_keywords' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true,
@@ -77,9 +68,7 @@ class BlogPosts extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addUniqueKey('slug');
-        $this->forge->addUniqueKey('title');
-        $this->forge->addKey('published_at');
-        $this->forge->addKey('status');
+        $this->forge->addKey(['status', 'published_at']);
 
         $this->forge->createTable('blog_posts', true);
     }

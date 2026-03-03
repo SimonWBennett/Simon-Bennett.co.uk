@@ -22,32 +22,31 @@ class BlogPost extends Model
     protected $allowedFields = [
         'user_id',
         'title',
+        'slug',
         'content',
         'status',
-        'cover_image',
-        'meta_title',
+        'cover_image_id',
         'meta_description',
-        'meta_keywords',
         'published_at',
     ];
     protected array $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'published_at' => '?datetime',
+        'cover_image_id' => '?integer',
         'created_at' => 'datetime',
+        'published_at' => '?datetime',
         'updated_at' => '?datetime',
         'deleted_at' => '?datetime',
     ];
     protected $validationRules = [
         'user_id' => 'required|integer|is_natural_no_zero',
-        'title' => 'required|string|max_length[255]|is_unique[blog_posts.title,id,{id}]',
+        'title' => 'required|string|max_length[255]',
+        'slug' => 'required|string|max_length[255]|is_unique[blog_posts.slug,id,{id}]',
         'content' => 'required|string',
-        'status' => 'required|in_list[draft,scheduled,published,archived]',
-        'cover_image' => 'permit_empty|string|max_length[255]',
-        'meta_title' => 'permit_empty|string|max_length[255]',
+        'status' => 'required|in_list[draft,published,archived]',
+        'cover_image_id' => 'permit_empty|integer|is_Natural_no_zero',
         'meta_description' => 'permit_empty|string|max_length[255]',
-        'meta_keywords' => 'permit_empty|string|max_length[255]',
-        'published_at' => 'permit_empty|valid_date',
+        'published_at' => 'required_if[status,published]|permit_empty|valid_date',
     ];
     protected $validationMessages = [
         'status' => [
@@ -55,22 +54,6 @@ class BlogPost extends Model
         ],
     ];
     protected $skipValidation = false;
-    protected $beforeInsert = ['syncSlugWithTitle'];
-    protected $beforeUpdate = ['syncSlugWithTitle'];
-
-
-    protected function syncSlugWithTitle(array $event): array
-    {
-        if (! isset($event['data']['title'])) {
-            return $event;
-        }
-
-        $title = trim((string) $event['data']['title']);
-        $event['data']['title'] = $title;
-        $event['data']['slug'] = url_title(convert_accented_characters($title), '-', true);
-
-        return $event;
-    }
 
     public function published(): BlogPost
     {
